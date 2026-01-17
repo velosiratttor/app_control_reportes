@@ -1,7 +1,17 @@
 import streamlit as st
+import pandas as pd
+from openpyxl import load_workbook
+
+
+ruta='reporte.xlsx'
+df.conver_excel(ruta,index=False)
 
 st.title("registro de actividades diarias")
 st.write("app de registro de actividades")
+
+if "datos" not in st.session_state:
+    st.session_state.datos=[]
+
 
 nombre= st.text_input("Nombre del analista")
 fecha=st.date_input("fecha de la actividad")
@@ -26,7 +36,19 @@ estado=st.selectbox(
      accept_new_options=True,
 )
 
-st.write("Nombre",nombre)
-st.write("Fecha",fecha)
-st.write("Actividad",actividad)
-st.write("Estado",estado)
+
+if st.button("agregar"):
+    st.session_state.datos.append({
+        "Nombre":nombre,
+        "Fecha":fecha,
+        "Actividad":actividad,
+        "Estado":estado
+    })
+
+df= pd.DataFrame(st.session_state.datos)
+st.dataframe(df)
+
+#st.write("Nombre",nombre)
+#st.write("Fecha",fecha)
+#st.write("Actividad",actividad)
+#st.write("Estado",estado)
