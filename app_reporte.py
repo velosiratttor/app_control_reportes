@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
-from openpyxl import load_workbook
-
+from openpyxl.styles import Font,Alignment,PatternFill,Border,Side
 
 ruta='reporte.xlsx'
-df.conver_excel(ruta,index=False)
 
 st.title("registro de actividades diarias")
 st.write("app de registro de actividades")
@@ -30,7 +28,7 @@ estado=st.selectbox(
     "Estado de la actividad",
     ["ATENDIDO",
      "EN ATENCION",
-     "ESCLADO"],
+     "ESCALADO"],
      index=None,
      placeholder="seleccione el estado de tu actividad",
      accept_new_options=True,
@@ -48,6 +46,30 @@ if st.button("agregar"):
 df= pd.DataFrame(st.session_state.datos)
 st.dataframe(df)
 
+if not df.empty:
+    if st.button("Descargar excel con encabezados"):
+        ruta="reporte.xlsx"
+        with pd.ExcelWriter(ruta,engine="openpyxl") as writer:
+            df.to_excel(
+                writer,
+                sheet_name="Reporte",
+                index=False,
+                startrow=5
+            )
+            hoja=writer.sheets["Reporte"]
+
+            hoja.merge_cells("A1:B1")
+            hoja.merge_cells("A2:B2")
+            hoja.merge_cells("A3:B3")
+
+            hoja["A1"]="INSTITUTO NACIONAL TÉCNICO Y TECNOLÓGICO"
+            hoja["A2"] = "ATENCIÓN DE SOLICITUDES"
+            hoja["A3"] = "DIRECCIÓN DE FORMACIÓN PROFESIONAL"
+
+            for fila in range(1, 4):
+                celda = hoja[f"A{fila}"]
+                celda.font = Font(bold=True)
+                celda.alignment = Alignment(horizontal="center")
 #st.write("Nombre",nombre)
 #st.write("Fecha",fecha)
 #st.write("Actividad",actividad)
